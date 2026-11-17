@@ -11,24 +11,30 @@ const isTerminal = (event: AgentEvent): boolean =>
 /**
  * Frames the Agent's events as Server-Sent Events. The stream always ends
  * with a done or error event: if the Agent throws or stops early, an internal
- * error closes it.
+ * error closes it. If the caller disconnects, the Agent is stopped.
  */
 export const toSseStream = (
   events: AsyncIterable<AgentEvent>,
   onError: (event: string, error: unknown) => void,
-): ReadableStream<Uint8Array> =>
-  new ReadableStream<Uint8Array>({
+): ReadableStream<Uint8Array> => {
+  const iterator = events[Symbol.asyncIterator]();
+  let isCancelled = false;
+  return new ReadableStream<Uint8Array>({
     async start(controller) {
       let last: AgentEvent | undefined;
       try {
-        for await (const event of events) {
-          controller.enqueue(frame(event));
-          last = event;
+        while (!isCancelled) {
+          const next = await iterator.next();
+          if (next.done || isCancelled) break;
+          controller.enqueue(frame(next.value));
+          last = next.value;
         }
       } catch (error) {
+        if (isCancelled) return;
         onError("countersign.agent_failed", error);
         last = undefined;
       }
+      if (isCancelled) return;
       if (!last || !isTerminal(last)) {
         controller.enqueue(
           frame({
@@ -40,4 +46,12 @@ export const toSseStream = (
       }
       controller.close();
     },
+    cancel() {
+      isCancelled = true;
+      // Not awaited: the Agent finishes its current step, then stops.
+      iterator.return?.().catch((error: unknown) => {
+        onError("countersign.agent_stop_failed", error);
+      });
+    },
   });
+};
