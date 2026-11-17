@@ -79,6 +79,8 @@ export default defineConfig({
             // Harness hook tests are Node-only (they import node:fs / node:path
             // and spawn subprocesses); they run under the "claude" project below.
             ".claude/**",
+            // The core package runs under the "core" project below.
+            "packages/**",
           ],
           server: {
             deps: {
