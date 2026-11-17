@@ -1,0 +1,24 @@
+{
+  // The core runs in Deno (Edge Functions), Node (tests, MCP) and the browser
+  // (shared schemas). Only the ES library is in scope: no DOM, no Node and no
+  // Deno globals, so a platform API used by mistake fails the typecheck.
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.countersign-core.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": [],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}
