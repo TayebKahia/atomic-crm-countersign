@@ -6,6 +6,7 @@ import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
+import { CountersignButton } from "../countersign/CountersignButton";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import { ImportPage } from "../misc/ImportPage";
 import { ChangelogPage } from "../misc/ChangelogPage";
@@ -83,6 +84,7 @@ const Header = () => {
               </div>
               <div className="flex items-center">
                 <GlobalSearchButton />
+                <CountersignButton />
                 <ThemeModeToggle />
                 <RefreshButton />
                 <UserMenu>
