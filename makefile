@@ -62,12 +62,15 @@ stop: stop-supabase ## stop the stack locally
 
 start-supabase-e2e: ## start a separate supabase instance for e2e (fresh DB every run)
 	@npx supabase stop --workdir .supabase-e2e --no-backup 2>/dev/null || true
-	rm -rf .supabase-e2e/supabase
+	rm -rf .supabase-e2e/supabase .supabase-e2e/packages
 	mkdir -p .supabase-e2e/supabase
 	cp supabase/config.e2e.toml .supabase-e2e/supabase/config.toml
 	cp -r supabase/migrations .supabase-e2e/supabase/migrations
 	cp -r supabase/schemas .supabase-e2e/supabase/schemas
 	cp -r supabase/functions .supabase-e2e/supabase/functions
+	# The countersign function imports the core package by a path relative to the
+	# repo root (functions/countersign/deno.json), so it must sit beside supabase/.
+	cp -r packages .supabase-e2e/packages
 	# Edge functions reject JWTs whose issuer differs from SB_JWT_ISSUER. functions/.env sets it
 	# for the dev instance (port 54321), but e2e JWTs are issued by the e2e API (port 54341, see
 	# config.e2e.toml), so rewrite it to that port. Keep both ports in sync.

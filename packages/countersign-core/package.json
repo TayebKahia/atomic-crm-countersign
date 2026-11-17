@@ -1,0 +1,16 @@
+{
+  "name": "@countersign/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-neutral core of the Countersign agent: schemas, ports and the request pipeline.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project tsconfig.test.json"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}

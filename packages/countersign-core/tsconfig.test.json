@@ -1,0 +1,10 @@
+{
+  // Typechecks the tests, which may use the test runner's types. Kept apart
+  // from tsconfig.json so those types never leak into the core's own sources.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.countersign-core-test.tsbuildinfo"
+  },
+  "include": ["src"],
+  "exclude": []
+}

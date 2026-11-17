@@ -94,6 +94,30 @@ jobs:
             - name: 🔎 Unit Tests on Supabase functions
               run: CI=1 npm run test:unit:functions -- --run
 
+    test-core:
+        name: 🧩 Countersign core
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: ${{ !github.event.pull_request.draft || github.event_name == 'push' }}
+        steps:
+            - name: 📥 Checkout repo
+              uses: actions/checkout@v7
+
+            - name: ⚙️ Setup node
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: 📥 Download deps
+              run: npm ci
+
+            - name: 🏷️ Typecheck the core package
+              run: npm run typecheck:core
+
+            - name: 🔎 Unit Tests on the core package
+              run: CI=1 npm run test:unit:core -- --run
+
     e2e-test:
       timeout-minutes: 10
       runs-on: ubuntu-latest
