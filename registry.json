@@ -736,6 +736,30 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/countersign/useCountersignRequest.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/countersign/parseSseEvents.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/countersign/countersignStream.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/countersign/countersignMessages.ts",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/countersign/CountersignPanel.tsx",
+          "type": "registry:component"
+        },
+        {
+          "path": "src/components/atomic-crm/countersign/CountersignButton.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/contacts/useContactImport.tsx",
           "type": "registry:component"
         },
