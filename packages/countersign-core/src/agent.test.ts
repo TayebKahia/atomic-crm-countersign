@@ -38,9 +38,23 @@ const sequentialIds = (): (() => string) => {
   return () => `id-${++next}`;
 };
 
-const portsWith = (model: Ports["model"]): Ports => ({
+interface LoggedError {
+  event: string;
+  message: string;
+}
+
+const portsWith = (
+  model: Ports["model"],
+  logged: LoggedError[] = [],
+): Ports => ({
   model,
   newId: sequentialIds(),
+  logError: (event, error) => {
+    logged.push({
+      event,
+      message: error instanceof Error ? error.message : String(error),
+    });
+  },
 });
 
 const collect = async (
@@ -112,7 +126,8 @@ describe("runRequest", () => {
     expect(events[1]).toMatchObject({ type: "error", code: "internal" });
   });
 
-  it("ends with provider_unavailable, then done, when the model fails", async () => {
+  it("ends with provider_unavailable, then done, and logs the cause when the model fails", async () => {
+    const logged: LoggedError[] = [];
     const failingModel: Ports["model"] = {
       step: async () => {
         throw new Error("connection reset");
@@ -120,7 +135,7 @@ describe("runRequest", () => {
     };
 
     const events = await collect(
-      runRequest(MOVE_STALE_DEALS, REP, portsWith(failingModel)),
+      runRequest(MOVE_STALE_DEALS, REP, portsWith(failingModel, logged)),
     );
 
     expect(events.map((event) => event.type)).toEqual([
@@ -133,5 +148,8 @@ describe("runRequest", () => {
       code: "provider_unavailable",
     });
     expect(events[2]).toMatchObject({ type: "done", costUsd: 0 });
+    expect(logged).toEqual([
+      { event: "agent.model_step_failed", message: "connection reset" },
+    ]);
   });
 });

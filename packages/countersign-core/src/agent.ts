@@ -20,13 +20,13 @@ export async function* runRequest(
 ): AsyncGenerator<AgentEvent> {
   const requestId = ports.newId();
   yield { type: "status", step: 1 };
-  const { event, costUsd } = await planStep(request, caller, ports);
+  const { event, costUsd } = await draftOutcomeEvent(request, caller, ports);
   yield event;
   yield { type: "done", requestId, costUsd, degraded: false };
 }
 
 /** One planner step, turned into the Request's outcome event. Never throws. */
-const planStep = async (
+const draftOutcomeEvent = async (
   request: Request,
   caller: Caller,
   ports: Ports,
@@ -38,7 +38,8 @@ const planStep = async (
       request,
       messages: [{ role: "user", content: request.text }],
     });
-  } catch {
+  } catch (error) {
+    ports.logError("agent.model_step_failed", error);
     return {
       event: {
         type: "error",

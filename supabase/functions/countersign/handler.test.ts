@@ -54,6 +54,7 @@ const portsWith =
     return {
       model: callerEchoModel,
       newId: () => `id-${++next}`,
+      logError: () => {},
       ...overrides,
     };
   };

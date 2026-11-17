@@ -30,4 +30,6 @@ export interface Ports {
   model: LanguageModel;
   /** Returns a new unique id (Request, Plan and Change ids). */
   newId: () => string;
+  /** Records a failure the Agent recovered from, with its cause. */
+  logError: (event: string, error: unknown) => void;
 }

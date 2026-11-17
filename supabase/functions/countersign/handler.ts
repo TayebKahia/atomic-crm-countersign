@@ -3,6 +3,7 @@
 // events as Server-Sent Events. Kept free of Deno globals so the functions
 // test project can run it in Node.
 import {
+  CallerSchema,
   RequestSchema,
   runRequest,
   type AgentEvent,
@@ -12,6 +13,7 @@ import {
 
 import { corsHeaders } from "../_shared/cors.ts";
 import { createErrorResponse } from "../_shared/utils.ts";
+import { logError } from "./log.ts";
 import { toSseStream } from "./sse.ts";
 
 /** The CRM's `sales` row fields the Caller is built from. */
@@ -53,7 +55,11 @@ export const resolveCaller = async (
   if (!userId) return null;
   const sale = await session.getSale(userId);
   if (!sale || sale.disabled) return null;
-  return { userId, salesId: sale.id, isAdmin: sale.administrator };
+  return CallerSchema.parse({
+    userId,
+    salesId: sale.id,
+    isAdmin: sale.administrator,
+  });
 };
 
 export const createCountersignHandler =
@@ -100,13 +106,3 @@ export const createCountersignHandler =
       },
     });
   };
-
-const logError = (event: string, error: unknown): void => {
-  console.error(
-    JSON.stringify({
-      level: "error",
-      event,
-      message: error instanceof Error ? error.message : String(error),
-    }),
-  );
-};
