@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@countersign/core": "../../../packages/countersign-core/src/index.ts",
+    "zod": "npm:zod@^4.3.6"
+  }
+}
