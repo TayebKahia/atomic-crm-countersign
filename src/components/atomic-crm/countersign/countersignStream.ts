@@ -9,6 +9,13 @@ export type StreamRequest = (
   signal: AbortSignal,
 ) => AsyncIterable<AgentEvent>;
 
+/**
+ * How long a Request may stream before the panel gives up: the Edge
+ * Function's wall-clock limit (150 s), so the browser never waits longer
+ * than the function can run.
+ */
+const REQUEST_TIMEOUT_MS = 150_000;
+
 /** Calls the countersign Edge Function with the signed-in person's session. */
 export const streamCountersignRequest: StreamRequest = async function* (
   text,
@@ -29,7 +36,10 @@ export const streamCountersignRequest: StreamRequest = async function* (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ text }),
-      signal,
+      signal: AbortSignal.any([
+        signal,
+        AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      ]),
     },
   );
   if (!response.ok || !response.body) {

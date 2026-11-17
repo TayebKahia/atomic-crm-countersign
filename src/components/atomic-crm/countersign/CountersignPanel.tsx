@@ -1,4 +1,8 @@
-import type { AgentEvent, PreviewChange } from "@countersign/core";
+import {
+  MAX_REQUEST_LENGTH,
+  type AgentEvent,
+  type PreviewChange,
+} from "@countersign/core";
 import { useTranslate, type TranslateFunction } from "ra-core";
 import { useId, useState, type FormEvent } from "react";
 
@@ -40,7 +44,7 @@ export const CountersignPanel = ({ streamRequest }: CountersignPanelProps) => {
           value={text}
           onChange={(event) => setText(event.target.value)}
           placeholder={translate("crm.countersign.placeholder")}
-          maxLength={2000}
+          maxLength={MAX_REQUEST_LENGTH}
         />
         <Button
           type="submit"
@@ -61,12 +65,12 @@ export const CountersignPanel = ({ streamRequest }: CountersignPanelProps) => {
           {translate("crm.countersign.unavailable")}
         </p>
       ) : null}
-      {outcome ? <Outcome event={outcome} /> : null}
+      {outcome ? <OutcomeView event={outcome} /> : null}
     </div>
   );
 };
 
-const Outcome = ({ event }: { event: AgentEvent }) => {
+const OutcomeView = ({ event }: { event: AgentEvent }) => {
   const translate = useTranslate();
   switch (event.type) {
     case "plan":

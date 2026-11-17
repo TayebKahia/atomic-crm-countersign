@@ -44,14 +44,26 @@ const reducer = (
       return { ...state, step: null, outcome: event };
     }
     case "finish":
-      return { ...state, isRunning: false, step: null };
+      // A stream that closes without an outcome is a broken stream.
+      return {
+        ...state,
+        isRunning: false,
+        step: null,
+        isUnavailable: state.outcome === null,
+      };
     case "fail":
       return { ...state, isRunning: false, step: null, isUnavailable: true };
   }
 };
 
+export interface CountersignRequest extends CountersignRequestState {
+  send: (text: string) => Promise<void>;
+}
+
 /** Runs Requests one at a time and folds their streamed events into state. */
-export const useCountersignRequest = (streamRequest: StreamRequest) => {
+export const useCountersignRequest = (
+  streamRequest: StreamRequest,
+): CountersignRequest => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const controllerRef = useRef<AbortController | null>(null);
 

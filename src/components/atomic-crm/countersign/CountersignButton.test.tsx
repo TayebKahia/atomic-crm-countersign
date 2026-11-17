@@ -116,6 +116,25 @@ describe("CountersignButton", () => {
       .toBeVisible();
   });
 
+  it("tells the person when the stream ends without an outcome", async () => {
+    const { stream, release } = heldStream([]);
+    release();
+    const screen = await renderButton(stream);
+
+    await screen.getByRole("button", { name: "Countersign" }).click();
+    await userEvent.fill(
+      screen.getByRole("textbox", { name: "Request" }),
+      "Summarise Acme",
+    );
+    await screen.getByRole("button", { name: "Send" }).click();
+
+    await expect
+      .element(
+        screen.getByText("Countersign is unavailable right now. Try again."),
+      )
+      .toBeVisible();
+  });
+
   it("tells the person when Countersign cannot be reached", async () => {
     const unreachable: StreamRequest = () => ({
       [Symbol.asyncIterator]: () => ({
